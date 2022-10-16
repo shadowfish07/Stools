@@ -28,7 +28,7 @@ type FieldType<T> = keyof KeyOfMapType<execType<T>>;
 export const useStorage = <
   T extends keyof StorageData | StorageData = StorageData
 >({ useKey }: Props<T> = {}): UseStorageReturnType<T> => {
-  const [data, setData] = useState<StorageData>(Storage.data);
+  const [data, setData] = useState<StorageData>(Storage.getData());
   const { isSaving, setIsSaving } = useContext(SavingContext);
 
   /**
@@ -56,9 +56,9 @@ export const useStorage = <
     }
     setIsSaving(true);
     const finalData = {
-      ...Storage.data,
+      ...Storage.getData(),
       [useKey as keyof StorageData]: new Map(
-        Storage.data[useKey as keyof StorageData] as any
+        Storage.getData()[useKey as keyof StorageData] as any
       ).set(id, value),
     };
 
@@ -81,11 +81,11 @@ export const useStorage = <
     }
     setIsSaving(true);
     const finalData = {
-      ...Storage.data,
+      ...Storage.getData(),
       [useKey as keyof StorageData]: new Map(
-        Storage.data[useKey as keyof StorageData] as any
+        Storage.getData()[useKey as keyof StorageData] as any
       ).set(id, {
-        ...Storage.data[useKey as keyof StorageData].get(id),
+        ...Storage.getData()[useKey as keyof StorageData].get(id),
         [field]: value,
       }),
     };

@@ -41,3 +41,14 @@ declare type StorageData = {
 declare type JsonStorageData = {
   [K in keyof StorageData]: KeyOfMapType<StorageData[K]>[];
 };
+
+declare type Config = {
+  defaultCategory: {
+    title: string;
+    icon: string;
+  };
+  favorite: {
+    title: string;
+    icon: string;
+  };
+};

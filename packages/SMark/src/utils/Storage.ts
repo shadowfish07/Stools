@@ -1,8 +1,31 @@
 import { nanoid } from "nanoid";
 export class Storage {
-  static data: StorageData;
+  private static data: StorageData;
+  private static config: Config;
 
-  static async initLocalData(): Promise<StorageData> {
+  static getData(): StorageData {
+    return Storage.data;
+  }
+  static getConfig(): Config {
+    return Storage.config;
+  }
+
+  private static async initLocalConfig(): Promise<Config> {
+    const initConfig = {
+      defaultCategory: {
+        title: "所有书签",
+        icon: "🗂️",
+      },
+      favorite: {
+        title: "星标",
+        icon: "❤️",
+      },
+    };
+    await Storage.writeLocalConfig(initConfig);
+    return initConfig;
+  }
+
+  private static async initLocalData(): Promise<StorageData> {
     const initData: StorageData = {
       categories: new Map<string, Category>(),
       bookmarks: new Map<string, BookMark>(),
@@ -19,6 +42,19 @@ export class Storage {
     });
     await Storage.writeLocalData(initData);
     return initData;
+  }
+
+  static async loadLocalConfig(): Promise<Config> {
+    let jsonConfig = (await chrome.storage.local.get(["config"])).config;
+    console.log("loaded config", jsonConfig);
+    if (!jsonConfig || Object.keys(jsonConfig).length === 0) {
+      console.log("init config");
+      jsonConfig = await Storage.initLocalConfig();
+    }
+
+    Storage.config = jsonConfig;
+
+    return Storage.config;
   }
 
   static async loadLocalData(): Promise<StorageData> {
@@ -60,6 +96,11 @@ export class Storage {
     Storage.data = data;
 
     await chrome.storage.local.set({ data: finalData });
+  }
+
+  static async writeLocalConfig(config: Config): Promise<void> {
+    Storage.config = config;
+    await chrome.storage.local.set({ config });
   }
 
   private constructor() {}

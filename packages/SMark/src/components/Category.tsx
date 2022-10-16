@@ -54,27 +54,6 @@ export const Category = () => {
     }
 
     updateField(id, type, value);
-
-    // if (!categories.has(id)) {
-    //   setCategories(
-    //     new Map(
-    //       categories.set(id, {
-    //         ...(newCategory as Category),
-    //         [type]: value,
-    //       })
-    //     )
-    //   );
-    //   return;
-    // }
-
-    // setCategories(
-    //   new Map(
-    //     categories.set(id, {
-    //       ...categories.get(id)!,
-    //       [type]: value,
-    //     })
-    //   )
-    // );
   };
 
   return (
