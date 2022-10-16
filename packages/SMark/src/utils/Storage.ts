@@ -3,8 +3,9 @@ export class Storage {
   static data: StorageData;
 
   static async initLocalData(): Promise<StorageData> {
-    const initData = {
+    const initData: StorageData = {
       categories: new Map<string, Category>(),
+      bookmarks: new Map<string, BookMark>(),
     };
     const id = nanoid();
     initData.categories.set(id, {
@@ -45,17 +46,25 @@ export class Storage {
   }
 
   static async writeLocalData(data: StorageData): Promise<void> {
-    const finalData: {
-      categories: (Category & { id: string })[];
-    } = {
-      categories: [],
+    const finalData: JsonStorageData = {
+      categories: [] as any,
+      bookmarks: [] as any,
     };
-    data.categories.forEach((value, key) => {
-      finalData.categories.push({
-        ...value,
-        id: key,
-      });
+
+    Object.keys(finalData).forEach((key) => {
+      finalData[key as keyof JsonStorageData] = [
+        ...data[key as keyof StorageData].values(),
+      ] as any;
     });
+
+    Storage.data = data;
+
+    // data.categories.forEach((value, key) => {
+    //   finalData.categories.push({
+    //     ...value,
+    //     id: key,
+    //   });
+    // });
     await chrome.storage.local.set({ data: finalData });
   }
 

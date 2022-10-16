@@ -13,10 +13,31 @@ declare type Category = {
   titleReadOnly: boolean;
   icon: string;
   iconReadOnly: boolean;
-  deletedAt: number | undefined;
+  deletedAt?: number;
   children: Category[];
 };
 
+declare type BookMark = {
+  id: string;
+  title: string;
+  url: string;
+  deletedAt?: number;
+  createdAt: number;
+  category: string;
+  icon?: string;
+};
+
+declare type SupportTypeOfStorageData = KeyOfMapType<
+  StorageData[keyof StorageData]
+>;
+
+declare type KeyOfMapType<T> = T extends Map<infer K, infer V> ? V : never;
+
 declare type StorageData = {
   categories: Map<string, Category>;
+  bookmarks: Map<string, BookMark>;
+};
+
+declare type JsonStorageData = {
+  [K in keyof StorageData]: KeyOfMapType<StorageData[K]>[];
 };
