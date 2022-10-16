@@ -59,12 +59,6 @@ export class Storage {
 
     Storage.data = data;
 
-    // data.categories.forEach((value, key) => {
-    //   finalData.categories.push({
-    //     ...value,
-    //     id: key,
-    //   });
-    // });
     await chrome.storage.local.set({ data: finalData });
   }
 

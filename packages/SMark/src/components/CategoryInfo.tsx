@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const StyledCategoryInfo = styled.div`
+const StyledCategoryInfo = styled.span`
   color: var(--color-text-2);
 
   span:nth-child(1) {
@@ -17,10 +17,18 @@ const StyledCategoryInfo = styled.div`
 `;
 
 type Props = {
-  category: Category;
+  category?: Category;
 };
 
 export const CategoryInfo = ({ category }: Props) => {
+  if (!category) {
+    return (
+      <StyledCategoryInfo>
+        <span>🗂️</span>
+        <span>所有书签</span>
+      </StyledCategoryInfo>
+    );
+  }
   return (
     <StyledCategoryInfo>
       <span>{category.icon}</span>

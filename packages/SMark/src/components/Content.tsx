@@ -1,10 +1,17 @@
 import Content from "@arco-design/web-react/es/Layout/content";
-import { memo } from "react";
+import { memo, useContext } from "react";
 import { useStorage } from "../hooks";
+import { BookmarksContext } from "../main";
 import { Bookmark } from "./Bookmark";
 
 export default memo(() => {
-  //   const [bookmarks, setBookmarks] = useStorage({ useKey: "bookmarks" });
+  const { data: bookmarks } = useContext(BookmarksContext);
 
-  return <Content style={{ padding: 10 }}>{/* <Bookmark /> */}</Content>;
+  return (
+    <Content style={{ padding: 10 }}>
+      {[...bookmarks.values()].map((bookmark) => (
+        <Bookmark key={bookmark.id} bookmark={bookmark} />
+      ))}
+    </Content>
+  );
 });

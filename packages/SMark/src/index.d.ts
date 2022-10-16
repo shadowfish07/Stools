@@ -23,7 +23,7 @@ declare type BookMark = {
   url: string;
   deletedAt?: number;
   createdAt: number;
-  category: string;
+  category?: string;
   icon?: string;
 };
 

@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Button, Layout } from "@arco-design/web-react";
 import Sider from "@arco-design/web-react/es/Layout/sider";
 import { Category, Header, Content } from "./components";
-import { SavingContext } from "./main";
+import { BookmarksContext, SavingContext } from "./main";
 import { WebApp } from "./pages";
+import { useStorage } from "./hooks";
 
 function App() {
   const openNewPage = () => {
@@ -13,10 +14,26 @@ function App() {
   };
 
   const [isSaving, setIsSaving] = useState(false);
+  const {
+    data: bookmarks,
+    updateData: updateBookmarksData,
+    updateField: updateBookmarksField,
+    updateRecord: updateBookmarksRecord,
+  } = useStorage({ useKey: "bookmarks" });
 
   return (
     <SavingContext.Provider value={{ isSaving, setIsSaving }}>
-      <WebApp />
+      <BookmarksContext.Provider
+        value={{
+          data: bookmarks,
+          updateData: updateBookmarksData,
+          updateField: updateBookmarksField,
+          updateRecord: updateBookmarksRecord,
+          isSaving,
+        }}
+      >
+        <WebApp />
+      </BookmarksContext.Provider>
     </SavingContext.Provider>
   );
 }

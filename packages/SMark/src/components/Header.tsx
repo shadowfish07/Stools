@@ -1,6 +1,7 @@
-import { Button } from "@arco-design/web-react";
+import { Button, Popover } from "@arco-design/web-react";
 import Header from "@arco-design/web-react/es/Layout/header";
 import { memo, useContext, useState } from "react";
+import { AddBookmark } from ".";
 import { SavingContext } from "../main";
 
 export default memo(() => {
@@ -18,9 +19,7 @@ export default memo(() => {
     >
       <div>{isSaving && <span>保存中</span>}</div>
       <div>
-        <Button type="primary" onClick={() => {}}>
-          添加
-        </Button>
+        <AddBookmark />
       </div>
     </Header>
   );

@@ -8,7 +8,7 @@ type Props<T extends keyof StorageData | StorageData = StorageData> = {
 
 type execType<T> = T extends keyof StorageData ? StorageData[T] : T;
 
-type returnType<T> = {
+export type UseStorageReturnType<T> = {
   data: execType<T>;
   updateField: <P extends FieldType<T>>(
     id: string,
@@ -27,7 +27,7 @@ type FieldType<T> = keyof KeyOfMapType<execType<T>>;
  */
 export const useStorage = <
   T extends keyof StorageData | StorageData = StorageData
->({ useKey }: Props<T> = {}): returnType<T> => {
+>({ useKey }: Props<T> = {}): UseStorageReturnType<T> => {
   const [data, setData] = useState<StorageData>(Storage.data);
   const { isSaving, setIsSaving } = useContext(SavingContext);
 

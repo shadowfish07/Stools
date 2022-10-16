@@ -1,5 +1,5 @@
 import { Card, Image, Typography } from "@arco-design/web-react";
-import { CategoryInfo } from ".";
+import { CategoryInfo, UrlInfo } from ".";
 import { SelectUtil } from "../utils";
 
 type Props = {
@@ -7,10 +7,10 @@ type Props = {
 };
 
 export const Bookmark = ({ bookmark }: Props) => {
-  const category = SelectUtil.selectCategory(bookmark.category);
+  const category = SelectUtil.selectCategory(bookmark.category!);
 
   return (
-    <Card hoverable>
+    <Card hoverable style={{ marginBottom: 5, cursor: "pointer" }}>
       <div style={{ display: "flex" }}>
         <Image width={20} height={20} />
         <div style={{ marginLeft: 10 }}>
@@ -18,7 +18,8 @@ export const Bookmark = ({ bookmark }: Props) => {
             {bookmark.title}
           </Typography.Title>
           {/* <Typography.Text type="secondary">Secondary</Typography.Text> */}
-          {category && <CategoryInfo category={category} />}
+          <CategoryInfo category={category} />
+          <UrlInfo bookmark={bookmark} />
         </div>
       </div>
     </Card>
