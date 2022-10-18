@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Layout } from "@arco-design/web-react";
 import Sider from "@arco-design/web-react/es/Layout/sider";
 import { Category, Header, Content } from "./components";
-import { BookmarksContext, ConfigContext, SavingContext } from "./main";
+import { SavingContext } from "./main";
 import { WebApp } from "./pages";
-import { useConfig, useStorage } from "./hooks";
+import { useConfigState } from "./store/useConfigState";
+import { useDataState } from "./store/useDataState";
 
 function App() {
   const openNewPage = () => {
@@ -13,31 +14,25 @@ function App() {
     });
   };
 
+  const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const {
-    data: bookmarks,
-    updateData: updateBookmarksData,
-    updateField: updateBookmarksField,
-    updateRecord: updateBookmarksRecord,
-  } = useStorage({ useKey: "bookmarks" });
 
-  const [config, setConfig] = useConfig();
+  const loadLocalConfig = useConfigState((state) => state.loadLocalConfig);
+  const loadLocalData = useDataState((state) => state.loadLocalData);
+
+  useEffect(() => {
+    const loadPromises = [loadLocalConfig(), loadLocalData()];
+    Promise.all(loadPromises).then(() => {
+      setLoading(false);
+    });
+  }, []);
+
+  // TODO 传入App，内部支持骨架屏渲染
+  if (loading) return <div>Loading...</div>;
 
   return (
     <SavingContext.Provider value={{ isSaving, setIsSaving }}>
-      <ConfigContext.Provider value={[config, setConfig]}>
-        <BookmarksContext.Provider
-          value={{
-            data: bookmarks,
-            updateData: updateBookmarksData,
-            updateField: updateBookmarksField,
-            updateRecord: updateBookmarksRecord,
-            isSaving,
-          }}
-        >
-          <WebApp />
-        </BookmarksContext.Provider>
-      </ConfigContext.Provider>
+      <WebApp />
     </SavingContext.Provider>
   );
 }

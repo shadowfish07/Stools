@@ -10,14 +10,12 @@ declare type Emoji = {
 declare type Category = {
   id: string;
   title: string;
-  titleReadOnly: boolean;
   icon: string;
-  iconReadOnly: boolean;
   deletedAt?: number;
   children: Category[];
 };
 
-declare type BookMark = {
+declare type Bookmark = {
   id: string;
   title: string;
   url: string;
@@ -35,7 +33,7 @@ declare type KeyOfMapType<T> = T extends Map<infer K, infer V> ? V : never;
 
 declare type StorageData = {
   categories: Map<string, Category>;
-  bookmarks: Map<string, BookMark>;
+  bookmarks: Map<string, Bookmark>;
 };
 
 declare type JsonStorageData = {

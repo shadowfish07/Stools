@@ -1,13 +1,14 @@
 import { Card, Image, Typography } from "@arco-design/web-react";
 import { CategoryInfo, UrlInfo } from ".";
-import { SelectUtil } from "../utils";
+import { useStorage } from "../hooks";
 
 type Props = {
-  bookmark: BookMark;
+  bookmark: Bookmark;
 };
 
 export const Bookmark = ({ bookmark }: Props) => {
-  const category = SelectUtil.selectCategory(bookmark.category!);
+  const { selectHelper } = useStorage({ useKey: "categories" });
+  const category = selectHelper.selectCategory(bookmark.category!);
 
   return (
     <Card hoverable style={{ marginBottom: 5, cursor: "pointer" }}>

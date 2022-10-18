@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import { SavingContext } from "../main";
-import { Storage } from "../utils/Storage";
+import { useDataState } from "../store/useDataState";
+import { SelectHelper } from "../utils";
 
 type Props<T extends keyof StorageData | StorageData = StorageData> = {
   useKey?: T;
@@ -18,6 +19,7 @@ export type UseStorageReturnType<T> = {
   updateData: (newData: execType<T>) => void;
   updateRecord: (id: string, value: KeyOfMapType<execType<T>>) => void;
   isSaving: boolean;
+  selectHelper: SelectHelper;
 };
 
 type FieldType<T> = keyof KeyOfMapType<execType<T>>;
@@ -28,7 +30,7 @@ type FieldType<T> = keyof KeyOfMapType<execType<T>>;
 export const useStorage = <
   T extends keyof StorageData | StorageData = StorageData
 >({ useKey }: Props<T> = {}): UseStorageReturnType<T> => {
-  const [data, setData] = useState<StorageData>(Storage.getData());
+  const [data, setData] = useDataState((state) => [state.data, state.setData]);
   const { isSaving, setIsSaving } = useContext(SavingContext);
 
   /**
@@ -41,8 +43,7 @@ export const useStorage = <
       useKey ? { ...data, [useKey as keyof StorageData]: newData } : newData
     ) as StorageData;
 
-    Storage.writeLocalData(finalData).then(() => setIsSaving(false));
-    setData(finalData);
+    setData(finalData).then(() => setIsSaving(false));
   };
 
   /**
@@ -56,14 +57,13 @@ export const useStorage = <
     }
     setIsSaving(true);
     const finalData = {
-      ...Storage.getData(),
+      ...data,
       [useKey as keyof StorageData]: new Map(
-        Storage.getData()[useKey as keyof StorageData] as any
+        data[useKey as keyof StorageData] as any
       ).set(id, value),
     };
 
-    Storage.writeLocalData(finalData).then(() => setIsSaving(false));
-    setData(finalData);
+    setData(finalData).then(() => setIsSaving(false));
   };
 
   /**
@@ -81,22 +81,30 @@ export const useStorage = <
     }
     setIsSaving(true);
     const finalData = {
-      ...Storage.getData(),
+      ...data,
       [useKey as keyof StorageData]: new Map(
-        Storage.getData()[useKey as keyof StorageData] as any
+        data[useKey as keyof StorageData] as any
       ).set(id, {
-        ...Storage.getData()[useKey as keyof StorageData].get(id),
+        ...data[useKey as keyof StorageData].get(id),
         [field]: value,
       }),
     };
 
-    Storage.writeLocalData(finalData).then(() => setIsSaving(false));
-    setData(finalData);
+    setData(finalData).then(() => setIsSaving(false));
   };
+
+  // const selectCategory = (id: string) => SelectUtil.selectCategory(id, data);
 
   const finalData = (
     useKey ? data[useKey as keyof StorageData] : data
   ) as execType<T>;
 
-  return { data: finalData, updateField, updateData, updateRecord, isSaving };
+  return {
+    data: finalData,
+    updateField,
+    updateData,
+    updateRecord,
+    isSaving,
+    selectHelper: new SelectHelper(data),
+  };
 };

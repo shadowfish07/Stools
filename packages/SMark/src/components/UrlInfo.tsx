@@ -12,7 +12,7 @@ const StyledUrlInfo = styled.span`
 `;
 
 type Props = {
-  bookmark: BookMark;
+  bookmark: Bookmark;
 };
 
 export const UrlInfo = ({ bookmark }: Props) => {

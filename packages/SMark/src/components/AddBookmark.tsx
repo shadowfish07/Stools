@@ -4,7 +4,6 @@ import { nanoid } from "nanoid";
 import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useStorage } from "../hooks";
-import { BookmarksContext } from "../main";
 
 const StyledContent = styled.div`
   .button {
@@ -17,7 +16,7 @@ const StyledContent = styled.div`
 export const AddBookmark = () => {
   const [visible, setVisible] = useState(false);
   const [url, setUrl] = useState("");
-  const { updateRecord } = useContext(BookmarksContext);
+  const { updateRecord } = useStorage({ useKey: "bookmarks" });
 
   const handleUrlChange = (url: string) => {
     setUrl(url);

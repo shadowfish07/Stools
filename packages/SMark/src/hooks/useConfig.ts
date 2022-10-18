@@ -1,6 +1,6 @@
 import { useContext, useState } from "react";
 import { SavingContext } from "../main";
-import { Storage } from "../utils";
+import { useConfigState } from "../store/useConfigState";
 
 export type UseConfigReturnType = [
   Config,
@@ -8,7 +8,10 @@ export type UseConfigReturnType = [
 ];
 
 export const useConfig = (): UseConfigReturnType => {
-  const [config, setConfig] = useState(Storage.getConfig());
+  const [config, setConfig] = useConfigState((state) => [
+    state.config,
+    state.setConfig,
+  ]);
   const { setIsSaving } = useContext(SavingContext);
 
   const updateConfig = <T extends keyof Config>(key: T, value: Config[T]) => {
@@ -19,8 +22,7 @@ export const useConfig = (): UseConfigReturnType => {
       [key]: value,
     };
 
-    Storage.writeLocalConfig(newConfig).then(() => setIsSaving(false));
-    setConfig(newConfig);
+    setConfig(newConfig).then(() => setIsSaving(false));
   };
 
   return [config, updateConfig];

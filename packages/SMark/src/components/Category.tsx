@@ -1,16 +1,21 @@
 import { Button, Menu, Typography } from "@arco-design/web-react";
 import { useState } from "react";
-import { useStorage } from "../hooks";
-import { Storage } from "../utils/Storage";
+import { useConfig, useStorage } from "../hooks";
 import { CategoryItem } from "./CategoryItem";
 import { IconPlus } from "@arco-design/web-react/icon";
 import { nanoid } from "nanoid";
-import { createGlobalStyle } from "styled-components";
+import styled, { createGlobalStyle } from "styled-components";
 
 const GlobalMenuStyle = createGlobalStyle`
   .arco-menu-light .arco-menu-inline-header.arco-menu-selected {
     background-color: var(--color-fill-2);
   }
+`;
+
+const StyledSectionHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
 export const Category = () => {
@@ -22,6 +27,7 @@ export const Category = () => {
     useKey: "categories",
   });
   const [newCategory, setNewCategory] = useState<null | Category>(null);
+  const [config] = useConfig();
 
   const handleAddCategory = () => {
     setNewCategory(getNewCategoryTemplate());
@@ -31,9 +37,7 @@ export const Category = () => {
     return {
       id: nanoid(),
       title: "",
-      titleReadOnly: false,
       icon: "📂",
-      iconReadOnly: false,
       deletedAt: undefined,
       children: [],
     };
@@ -61,16 +65,10 @@ export const Category = () => {
       <GlobalMenuStyle />
       <Menu
         mode="vertical"
-        defaultSelectedKeys={["categories-1"]}
+        defaultSelectedKeys={["categories-default"]}
         style={{ paddingTop: 10 }}
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
+        <StyledSectionHeader>
           <Typography.Text
             type="secondary"
             style={{ userSelect: "none", fontSize: 13, marginLeft: 9 }}
@@ -83,7 +81,15 @@ export const Category = () => {
             onClick={handleAddCategory}
             icon={<IconPlus />}
           />
-        </div>
+        </StyledSectionHeader>
+
+        <Menu.Item style={{ padding: "0 5px" }} key={`categories-default`}>
+          <CategoryItem
+            id={"categories-default"}
+            category={config.defaultCategory}
+            isDefault
+          />
+        </Menu.Item>
 
         {[...categories.entries()].map(([id, category]) => (
           <Menu.Item style={{ padding: "0 5px" }} key={`categories-${id}`}>
