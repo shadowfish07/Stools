@@ -6,9 +6,23 @@ type DataState = {
   loadLocalData: () => Promise<StorageData>;
 };
 
+const initLocalData = async () => {
+  const initData: StorageData = {
+    categories: new Map<string, Category>(),
+    bookmarks: new Map<string, Bookmark>(),
+  };
+
+  await writeLocalData(initData);
+  return initData;
+};
+
 const loadLocalData = async () => {
   let jsonData = (await chrome.storage.local.get(["data"])).data;
   console.log("loaded data", jsonData);
+  if (!jsonData || Object.keys(jsonData).length === 0) {
+    console.log("init data");
+    jsonData = await initLocalData();
+  }
 
   const dataMap = {} as StorageData;
 
