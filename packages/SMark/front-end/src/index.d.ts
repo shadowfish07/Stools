@@ -49,4 +49,5 @@ declare type Config = {
     title: string;
     icon: string;
   };
+  backendURL?: string;
 };

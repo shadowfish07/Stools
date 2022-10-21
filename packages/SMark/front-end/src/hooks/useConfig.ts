@@ -4,7 +4,8 @@ import { useConfigState } from "../store/useConfigState";
 
 export type UseConfigReturnType = [
   Config,
-  <T extends keyof Config>(key: T, value: Config[T]) => void
+  <T extends keyof Config>(key: T, value: Config[T]) => void,
+  (newConfig: Config) => void
 ];
 
 export const useConfig = (): UseConfigReturnType => {
@@ -14,7 +15,10 @@ export const useConfig = (): UseConfigReturnType => {
   ]);
   const { setIsSaving } = useContext(SavingContext);
 
-  const updateConfig = <T extends keyof Config>(key: T, value: Config[T]) => {
+  const updateConfigByKey = <T extends keyof Config>(
+    key: T,
+    value: Config[T]
+  ) => {
     setIsSaving(true);
 
     const newConfig: Config = {
@@ -25,5 +29,11 @@ export const useConfig = (): UseConfigReturnType => {
     setConfig(newConfig).then(() => setIsSaving(false));
   };
 
-  return [config, updateConfig];
+  const updateConfig = (newConfig: Config) => {
+    setIsSaving(true);
+
+    setConfig(newConfig).then(() => setIsSaving(false));
+  };
+
+  return [config, updateConfigByKey, updateConfig];
 };

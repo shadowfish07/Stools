@@ -13,7 +13,7 @@ export const Bookmark = ({ bookmark }: Props) => {
   return (
     <Card hoverable style={{ marginBottom: 5, cursor: "pointer" }}>
       <div style={{ display: "flex" }}>
-        <Image width={20} height={20} />
+        <Image width={20} height={20} src="/test.ico" />
         <div style={{ marginLeft: 10 }}>
           <Typography.Title heading={6} style={{ margin: 0 }}>
             {bookmark.title}

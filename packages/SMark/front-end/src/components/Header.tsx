@@ -1,11 +1,13 @@
-import { Button, Popover } from "@arco-design/web-react";
+import { Button, Popover, Space } from "@arco-design/web-react";
 import Header from "@arco-design/web-react/es/Layout/header";
+import { IconSettings } from "@arco-design/web-react/icon";
 import { memo, useContext, useState } from "react";
-import { AddBookmark } from ".";
+import { AddBookmark, Config } from ".";
 import { SavingContext } from "../main";
 
 export default memo(() => {
   const { isSaving, setIsSaving } = useContext(SavingContext);
+  const [visible, setVisible] = useState(false);
 
   return (
     <Header
@@ -18,9 +20,15 @@ export default memo(() => {
       }}
     >
       <div>{isSaving && <span>保存中</span>}</div>
-      <div>
+      <Space>
+        <Config
+          renderButton={(openDrawer) => (
+            <Button type="text" icon={<IconSettings />} onClick={openDrawer} />
+          )}
+        />
+
         <AddBookmark />
-      </div>
+      </Space>
     </Header>
   );
 });

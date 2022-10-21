@@ -15,7 +15,8 @@ const GlobalMenuStyle = createGlobalStyle`
 const StyledSectionHeader = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  margin-top: -4px;
+  margin-bottom: 5px;
 `;
 
 export const Category = () => {

@@ -7,3 +7,4 @@ export { Bookmark } from "./Bookmark";
 export { CategoryInfo } from "./CategoryInfo";
 export { AddBookmark } from "./AddBookmark";
 export { UrlInfo } from "./UrlInfo";
+export { Config } from "./Config";
