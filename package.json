@@ -8,6 +8,7 @@
     "lerna": "^5.4.3"
   },
   "scripts": {
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "watchBuild": "lerna run watchBuild"
   }
 }
