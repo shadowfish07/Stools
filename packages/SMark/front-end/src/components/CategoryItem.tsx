@@ -56,7 +56,7 @@ export const CategoryItem = ({
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(isNew);
   const [title, setTitle] = useState(category.title);
-  const [config, setConfig] = useConfig();
+  const { config, updateConfigByKey } = useConfig();
 
   const getElementPosition = () => {
     if (!ref.current) {
@@ -96,7 +96,7 @@ export const CategoryItem = ({
   const handleSelectEmoji = ({ native }: Emoji) => {
     handleHideEmojiPicker();
     if (isDefault) {
-      setConfig("defaultCategory", {
+      updateConfigByKey("defaultCategory", {
         ...config["defaultCategory"],
         icon: native,
       });

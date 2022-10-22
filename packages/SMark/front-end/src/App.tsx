@@ -1,7 +1,4 @@
-import { useEffect, useState } from "react";
-import { Button, Layout } from "@arco-design/web-react";
-import Sider from "@arco-design/web-react/es/Layout/sider";
-import { Category, Header, Content } from "./components";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { SavingContext } from "./main";
 import { WebApp } from "./pages";
 import { useConfigState } from "./store/useConfigState";
@@ -25,6 +22,10 @@ function App() {
     Promise.all(loadPromises).then(() => {
       setLoading(false);
     });
+  }, []);
+
+  useLayoutEffect(() => {
+    document.body.setAttribute("arco-theme", "dark");
   }, []);
 
   // TODO 传入App，内部支持骨架屏渲染

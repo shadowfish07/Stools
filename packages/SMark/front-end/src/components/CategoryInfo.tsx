@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { useConfig } from "../hooks";
 
 const StyledCategoryInfo = styled.span`
   color: var(--color-text-2);
@@ -7,13 +8,6 @@ const StyledCategoryInfo = styled.span`
     margin-right: 5px;
     user-select: none;
   }
-
-  &::after {
-    content: "·";
-    text-align: center;
-    width: 20px;
-    display: inline-block;
-  }
 `;
 
 type Props = {
@@ -21,11 +15,12 @@ type Props = {
 };
 
 export const CategoryInfo = ({ category }: Props) => {
+  const { config } = useConfig();
   if (!category) {
     return (
       <StyledCategoryInfo>
-        <span>🗂️</span>
-        <span>所有书签</span>
+        <span>{config.defaultCategory.icon}</span>
+        <span>{config.defaultCategory.title}</span>
       </StyledCategoryInfo>
     );
   }

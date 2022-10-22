@@ -5,6 +5,7 @@ import { CategoryItem } from "./CategoryItem";
 import { IconPlus } from "@arco-design/web-react/icon";
 import { nanoid } from "nanoid";
 import styled, { createGlobalStyle } from "styled-components";
+import { useSideMenuState } from "../store/useSideMenuState";
 
 const GlobalMenuStyle = createGlobalStyle`
   .arco-menu-light .arco-menu-inline-header.arco-menu-selected {
@@ -19,7 +20,7 @@ const StyledSectionHeader = styled.div`
   margin-bottom: 5px;
 `;
 
-export const Category = () => {
+export const SideMenu = () => {
   const {
     data: categories,
     updateField,
@@ -28,7 +29,8 @@ export const Category = () => {
     useKey: "categories",
   });
   const [newCategory, setNewCategory] = useState<null | Category>(null);
-  const [config] = useConfig();
+  const { config } = useConfig();
+  const setSelect = useSideMenuState((state) => state.setSelect);
 
   const handleAddCategory = () => {
     setNewCategory(getNewCategoryTemplate());
@@ -61,6 +63,10 @@ export const Category = () => {
     updateField(id, type, value);
   };
 
+  const handleClickMenuItem = (key: string) => {
+    setSelect(key);
+  };
+
   return (
     <>
       <GlobalMenuStyle />
@@ -68,6 +74,7 @@ export const Category = () => {
         mode="vertical"
         defaultSelectedKeys={["categories-default"]}
         style={{ paddingTop: 10 }}
+        onClickMenuItem={handleClickMenuItem}
       >
         <StyledSectionHeader>
           <Typography.Text

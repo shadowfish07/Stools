@@ -1,9 +1,19 @@
-import { Button, Input, Popover, Typography } from "@arco-design/web-react";
+import {
+  Alert,
+  Button,
+  Input,
+  Message,
+  Popover,
+  Typography,
+} from "@arco-design/web-react";
 import { IconPlus } from "@arco-design/web-react/icon";
 import { nanoid } from "nanoid";
+import parseUrl from "parse-url";
 import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-import { useStorage } from "../hooks";
+import { useConfig, useStorage } from "../hooks";
+import { useBookmarkLoadState } from "../store/useBookmarkLoadState";
+import { saveBlob } from "../utils";
 
 const StyledContent = styled.div`
   .button {
@@ -16,23 +26,65 @@ const StyledContent = styled.div`
 export const AddBookmark = () => {
   const [visible, setVisible] = useState(false);
   const [url, setUrl] = useState("");
-  const { updateRecord } = useStorage({ useKey: "bookmarks" });
+  const { updateRecord, updateField } = useStorage({ useKey: "bookmarks" });
+  const { config, httpHelper } = useConfig();
+  const [addLoadingBookmarks, removeLoadingBookmarks] = useBookmarkLoadState(
+    (state) => [state.addLoadingBookmarks, state.removeLoadingBookmarks]
+  );
+  const [isButtonEnable, setIsButtonEnable] = useState(false);
 
   const handleUrlChange = (url: string) => {
     setUrl(url);
+    if (url.length > 0) {
+      setIsButtonEnable(true);
+    } else {
+      setIsButtonEnable(false);
+    }
+    try {
+      const urlWithProtocol =
+        url.startsWith("http://") || url.startsWith("https://")
+          ? url
+          : "http://" + url;
+      parseUrl(urlWithProtocol);
+    } catch (error) {
+      setIsButtonEnable(false);
+    }
   };
 
   const handleSave = () => {
     const id = nanoid();
+    const urlWithProtocol =
+      url.startsWith("http://") || url.startsWith("https://")
+        ? url
+        : "http://" + url;
+    const hostname = parseUrl(urlWithProtocol).resource;
     updateRecord(id, {
       id: id,
-      url,
-      title: "123456",
+      url: urlWithProtocol,
+      title: hostname,
       createdAt: new Date().getTime(),
       deletedAt: undefined,
     });
     setVisible(false);
     setUrl("");
+    addLoadingBookmarks(id);
+    httpHelper
+      .getMetaOfWebsite(urlWithProtocol)
+      .then((res) => {
+        if (res.title && res.title.length > 0)
+          updateField(id, "title", res.title);
+      })
+      .catch((err) => {
+        Message.error(err.message);
+      })
+      .finally(() => {
+        removeLoadingBookmarks(id);
+      });
+    httpHelper.getIconOfWebsite(urlWithProtocol).then(async (res) => {
+      if (!res) return;
+      const iconId = await saveBlob("iconBlob", res);
+      updateField(id, "icon", iconId);
+    });
   };
 
   useEffect(() => {
@@ -51,8 +103,21 @@ export const AddBookmark = () => {
       content={
         <StyledContent>
           <Typography.Text>URL</Typography.Text>
-          <Input value={url} onChange={handleUrlChange} />
-          <Button type="primary" className="button" onClick={handleSave}>
+          <Input
+            value={url}
+            onChange={handleUrlChange}
+            placeholder="http://"
+            onPressEnter={handleUrlChange}
+          />
+          {!config.backendURL && (
+            <Alert type="warning" content="配置后端地址后可自动读取站点信息" />
+          )}
+          <Button
+            disabled={!isButtonEnable}
+            type="primary"
+            className="button"
+            onClick={handleSave}
+          >
             保存
           </Button>
         </StyledContent>

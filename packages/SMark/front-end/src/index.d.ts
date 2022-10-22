@@ -23,6 +23,7 @@ declare type Bookmark = {
   createdAt: number;
   category?: string;
   icon?: string;
+  isFavorite?: boolean;
 };
 
 declare type SupportTypeOfStorageData = KeyOfMapType<
@@ -51,3 +52,5 @@ declare type Config = {
   };
   backendURL?: string;
 };
+
+declare type BlobKeys = "iconBlob";

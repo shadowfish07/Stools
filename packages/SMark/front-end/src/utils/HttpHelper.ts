@@ -1,11 +1,45 @@
 export default class {
-  public async getMetaOfWebsite(url: string) {
-    const result = await fetch(
-      encodeURI(
-        "http://getwebsitemeta.smark.1149571478162300.cn-hangzhou.fc.devsapp.net?url=https://www.baidu.com/"
-      )
-    );
+  private validUrl: string | null;
+  constructor(private config: Config) {
+    this.validUrl = config.backendURL
+      ? this.getValidUrl(config.backendURL)
+      : null;
+  }
 
-    console.log(await result.json());
+  private getValidUrl(url: string) {
+    if (url.endsWith("/")) {
+      return url.slice(0, -1);
+    }
+
+    return url;
+  }
+
+  public async getMetaOfWebsite(url: string) {
+    if (!this.validUrl) return null;
+    try {
+      const result = await fetch(
+        encodeURI(`${this.validUrl}/getWebsiteMeta?url=${url}`)
+      );
+      return await result.json();
+    } catch (error) {
+      console.log(error);
+      throw new Error("获取网站信息失败");
+    }
+  }
+
+  public async getIconOfWebsite(url: string) {
+    if (!this.validUrl) return null;
+    try {
+      const response = await fetch(
+        encodeURI(`${this.validUrl}/getWebsiteIcon?url=${url}`)
+      );
+      if (response.status !== 200 && response.type.startsWith("image")) {
+        const blob = await response.blob();
+        return blob;
+      }
+    } catch (error) {
+      console.log(error);
+      throw new Error("获取图标失败");
+    }
   }
 }

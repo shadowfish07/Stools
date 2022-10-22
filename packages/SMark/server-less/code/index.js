@@ -1,4 +1,4 @@
-、let cheerio = require("cheerio");
+let cheerio = require("cheerio");
 const superagent = require("superagent");
 const { Readability } = require("@mozilla/readability");
 const { JSDOM } = require("jsdom");
@@ -20,7 +20,7 @@ exports.handler = (req, resp, context) => {
     router(req, resp);
   } catch (error) {
     console.log("internal error", error);
-    sendJson(resp, { errorMsg: "内部服务器异常" });
+    sendJson(resp, { errorMsg: "内部服务器异常" }, 500);
   }
 };
 
@@ -44,12 +44,12 @@ const router = (req, resp) => {
 };
 
 const defaultRouter = (resp) => {
-  sendJson(resp, { errorMsg: "不支持的路由" });
+  sendJson(resp, { errorMsg: "不支持的路由" }, 400);
 };
 
 const getWebsiteIcon = async (url, resp) => {
   if (!url) {
-    sendJson(resp, { errorMsg: "url不能为空" });
+    sendJson(resp, { errorMsg: "url不能为空" }, 400);
   }
   const res = await superagent.get(url);
   const $ = cheerio.load(res.text);
@@ -143,7 +143,7 @@ const getWebsiteIcon = async (url, resp) => {
 
 const getWebsiteMeta = (url, resp) => {
   if (!url) {
-    sendJson(resp, { errorMsg: "url不能为空" });
+    sendJson(resp, { errorMsg: "url不能为空" }, 400);
   }
   superagent.get(url).end((err, res) => {
     if (err) {
@@ -152,13 +152,14 @@ const getWebsiteMeta = (url, resp) => {
 
     let $ = cheerio.load(res.text);
     const title = $("head > title").text();
-    sendJson(resp, { title });
+    const description = $("head > meta[name='description']").attr("content");
+    sendJson(resp, { title, description });
   });
 };
 
 const getReadModeContent = (url, resp) => {
   if (!url) {
-    sendJson(resp, { errorMsg: "url不能为空" });
+    sendJson(resp, { errorMsg: "url不能为空" }, 400);
   }
   superagent.get(url).end((err, res) => {
     if (err) {
@@ -174,7 +175,8 @@ const getReadModeContent = (url, resp) => {
   });
 };
 
-const sendJson = (resp, data) => {
+const sendJson = (resp, data, statusCode = 200) => {
+  resp.statusCode = statusCode;
   resp.setHeader("content-type", "application/json");
   resp.send(JSON.stringify(data));
 };

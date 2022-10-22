@@ -1,6 +1,23 @@
 import { Card, Image, Typography } from "@arco-design/web-react";
-import { CategoryInfo, UrlInfo } from ".";
+import { IconCommon, IconLoading } from "@arco-design/web-react/icon";
+import dayjs from "dayjs";
+import parseUrl from "parse-url";
+import { useEffect, useState } from "react";
+import { BookmarkDescriptionItem, CategoryInfo } from ".";
 import { useStorage } from "../hooks";
+import { useBookmarkLoadState } from "../store/useBookmarkLoadState";
+import { loadBlob } from "../utils";
+import isToday from "dayjs/plugin/isToday";
+import styled from "styled-components";
+
+const StyledCard = styled(Card)`
+  background: rgba(35, 35, 36, 0.8);
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: var(--color-bg-2);
+  }
+`;
 
 type Props = {
   bookmark: Bookmark;
@@ -9,20 +26,60 @@ type Props = {
 export const Bookmark = ({ bookmark }: Props) => {
   const { selectHelper } = useStorage({ useKey: "categories" });
   const category = selectHelper.selectCategory(bookmark.category!);
+  const [loadingBookmarks] = useBookmarkLoadState((state) => [
+    state.loadingBookmarks,
+  ]);
+  const [icon, setIcon] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (bookmark.icon) {
+      loadBlob(bookmark.icon).then((res) => setIcon(res));
+    } else {
+      setIcon(null);
+    }
+  }, [bookmark]);
+
+  const getFormatDate = () => {
+    dayjs.extend(isToday);
+    if (dayjs(bookmark.createdAt).isToday()) {
+      return dayjs(bookmark.createdAt).format("HH:mm");
+    }
+    if (dayjs(bookmark.createdAt).year() === dayjs().year()) {
+      return dayjs(bookmark.createdAt).format("MM.DD");
+    }
+    return dayjs(bookmark.createdAt).format("YYYY-MM-DD");
+  };
 
   return (
-    <Card hoverable style={{ marginBottom: 5, cursor: "pointer" }}>
+    <StyledCard
+      hoverable
+      style={{
+        marginBottom: 5,
+        cursor: "pointer",
+        backdropFilter: "blur(5px)",
+      }}
+    >
       <div style={{ display: "flex" }}>
-        <Image width={20} height={20} src="/test.ico" />
+        {loadingBookmarks.has(bookmark.id) ? (
+          <IconLoading style={{ width: 20, height: 20 }} />
+        ) : !icon ? (
+          <IconCommon style={{ width: 20, height: 20 }} />
+        ) : (
+          <Image width={20} height={20} src={icon} />
+        )}
         <div style={{ marginLeft: 10 }}>
           <Typography.Title heading={6} style={{ margin: 0 }}>
             {bookmark.title}
           </Typography.Title>
-          {/* <Typography.Text type="secondary">Secondary</Typography.Text> */}
-          <CategoryInfo category={category} />
-          <UrlInfo bookmark={bookmark} />
+          <BookmarkDescriptionItem>
+            <CategoryInfo category={category} />
+          </BookmarkDescriptionItem>
+          <BookmarkDescriptionItem>
+            {parseUrl(bookmark.url).resource}
+          </BookmarkDescriptionItem>
+          <BookmarkDescriptionItem>{getFormatDate()}</BookmarkDescriptionItem>
         </div>
       </div>
-    </Card>
+    </StyledCard>
   );
 };

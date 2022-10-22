@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useEffect, useContext, useRef } from "react";
 import { SavingContext } from "../main";
 import { useDataState } from "../store/useDataState";
 import { SelectHelper } from "../utils";
@@ -32,6 +32,11 @@ export const useStorage = <
 >({ useKey }: Props<T> = {}): UseStorageReturnType<T> => {
   const [data, setData] = useDataState((state) => [state.data, state.setData]);
   const { isSaving, setIsSaving } = useContext(SavingContext);
+  const dataRef = useRef<StorageData>(data);
+
+  useEffect(() => {
+    dataRef.current = data;
+  }, [data]);
 
   /**
    * 直接替换整个map或local data
@@ -40,7 +45,9 @@ export const useStorage = <
     setIsSaving(true);
 
     const finalData = (
-      useKey ? { ...data, [useKey as keyof StorageData]: newData } : newData
+      useKey
+        ? { ...dataRef.current, [useKey as keyof StorageData]: newData }
+        : newData
     ) as StorageData;
 
     setData(finalData).then(() => setIsSaving(false));
@@ -57,9 +64,9 @@ export const useStorage = <
     }
     setIsSaving(true);
     const finalData = {
-      ...data,
+      ...dataRef.current,
       [useKey as keyof StorageData]: new Map(
-        data[useKey as keyof StorageData] as any
+        dataRef.current[useKey as keyof StorageData] as any
       ).set(id, value),
     };
 
@@ -79,21 +86,19 @@ export const useStorage = <
     if (!useKey) {
       throw new Error("this method is only supported when useKey is passed");
     }
+
     setIsSaving(true);
     const finalData = {
-      ...data,
+      ...dataRef.current,
       [useKey as keyof StorageData]: new Map(
-        data[useKey as keyof StorageData] as any
+        dataRef.current[useKey as keyof StorageData] as any
       ).set(id, {
-        ...data[useKey as keyof StorageData].get(id),
+        ...dataRef.current[useKey as keyof StorageData].get(id),
         [field]: value,
       }),
     };
-
     setData(finalData).then(() => setIsSaving(false));
   };
-
-  // const selectCategory = (id: string) => SelectUtil.selectCategory(id, data);
 
   const finalData = (
     useKey ? data[useKey as keyof StorageData] : data

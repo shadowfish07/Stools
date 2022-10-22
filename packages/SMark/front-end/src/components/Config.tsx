@@ -1,6 +1,15 @@
-import { Button, Drawer, Form, Input, Message } from "@arco-design/web-react";
+import {
+  Button,
+  Drawer,
+  Form,
+  Input,
+  Message,
+  Modal,
+  ResizeBox,
+} from "@arco-design/web-react";
 import FormItem from "@arco-design/web-react/es/Form/form-item";
-import { useRef, useState } from "react";
+import parseUrl from "parse-url";
+import { useEffect, useRef, useState } from "react";
 import { useConfig } from "../hooks";
 
 type Props = {
@@ -9,8 +18,9 @@ type Props = {
 
 export const Config = ({ renderButton }: Props) => {
   const [visible, setVisible] = useState(false);
-  const [config, , setConfig] = useConfig();
+  const { config, updateConfig } = useConfig();
   const formRef = useRef<any>();
+  const [isChanged, setIsChanged] = useState(false);
 
   const openDrawer = () => {
     setVisible(true);
@@ -18,15 +28,37 @@ export const Config = ({ renderButton }: Props) => {
 
   const hideDrawer = () => {
     setVisible(false);
+    setIsChanged(false);
   };
 
-  const handleValuesChange = (values: Config) => {
-    setConfig({
+  const handleSubmit = (values: Config) => {
+    updateConfig({
       ...config,
       ...values,
     });
     hideDrawer();
     Message.success("设置已保存");
+  };
+
+  const handleChange = () => {
+    setIsChanged(true);
+  };
+
+  const handleDrawerOK = () => {
+    formRef.current.submit();
+  };
+
+  const handleDrawerCancel = () => {
+    if (isChanged) {
+      Modal.confirm({
+        title: "设置已更改，是否保存？",
+        onOk: handleDrawerOK,
+        onCancel: hideDrawer,
+        simple: true,
+      });
+      return;
+    }
+    hideDrawer();
   };
 
   return (
@@ -36,17 +68,17 @@ export const Config = ({ renderButton }: Props) => {
         width={"60%"}
         title={<span>设置 </span>}
         visible={visible}
-        onOk={() => {
-          formRef.current.submit();
-        }}
-        onCancel={() => {
-          hideDrawer();
-        }}
+        onOk={handleDrawerOK}
+        onCancel={handleDrawerCancel}
+        autoFocus={false}
+        okText="保存"
+        unmountOnExit
       >
         <Form
           ref={formRef}
           initialValues={config}
-          onSubmit={handleValuesChange}
+          onSubmit={handleSubmit}
+          onChange={handleChange}
           scrollToFirstError
           labelCol={{
             span: 3,
@@ -56,7 +88,22 @@ export const Config = ({ renderButton }: Props) => {
           }}
           labelAlign="left"
         >
-          <FormItem label="后端地址" field="backendURL">
+          <FormItem
+            label="后端地址"
+            field="backendURL"
+            rules={[
+              {
+                validator(value, callback) {
+                  try {
+                    parseUrl(value);
+                    return callback();
+                  } catch (error) {
+                    return callback("网址不合法");
+                  }
+                },
+              },
+            ]}
+          >
             <Input />
           </FormItem>
         </Form>
