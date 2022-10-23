@@ -13,6 +13,7 @@ export function WebApp() {
       }}
     >
       <Sider
+        resizeDirections={["right"]}
         style={{
           backgroundColor: "rgba(35, 35, 36, 0.9)",
           backdropFilter: "blur(5px)",

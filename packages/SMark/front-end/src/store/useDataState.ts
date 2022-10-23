@@ -52,6 +52,45 @@ const writeLocalData = async (data: StorageData) => {
     ] as any;
   });
 
+  // finalData.categories = [
+  //   {
+  //     children: [
+  //       {
+  //         children: [],
+  //         icon: "📂",
+  //         id: "6V8x2C6bhp9tQwAjhlb3O",
+  //         title: "新建分类2232323",
+  //         parentId: "6V8x2C6bhp9tQwAjhlb34",
+  //       },
+  //       {
+  //         children: [],
+  //         icon: "📂",
+  //         id: "6V8x2C6bhp9tQwAjhlb31",
+  //         title: "4523dsfd",
+  //         parentId: "6V8x2C6bhp9tQwAjhlb34",
+  //       },
+  //       {
+  //         children: [
+  //           {
+  //             children: [],
+  //             icon: "📂",
+  //             id: "6V8x2C6bhp9tQwAjhlb32",
+  //             title: "dasdasdasda",
+  //             parentId: "6V8x2C6bhp9tQwAjhlb33",
+  //           },
+  //         ],
+  //         icon: "📂",
+  //         id: "6V8x2C6bhp9tQwAjhlb33",
+  //         title: "adadasdsd",
+  //         parentId: "6V8x2C6bhp9tQwAjhlb34",
+  //       },
+  //     ],
+  //     icon: "📂",
+  //     id: "6V8x2C6bhp9tQwAjhlb34",
+  //     title: "新建分类",
+  //   },
+  // ];
+
   await chrome.storage.local.set({ data: finalData });
   return;
 };

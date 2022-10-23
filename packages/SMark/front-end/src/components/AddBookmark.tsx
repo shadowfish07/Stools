@@ -13,6 +13,7 @@ import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { useConfig, useStorage } from "../hooks";
 import { useBookmarkLoadState } from "../store/useBookmarkLoadState";
+import { useSideMenuState } from "../store/useSideMenuState";
 import { saveBlob } from "../utils";
 
 const StyledContent = styled.div`
@@ -32,6 +33,10 @@ export const AddBookmark = () => {
     (state) => [state.addLoadingBookmarks, state.removeLoadingBookmarks]
   );
   const [isButtonEnable, setIsButtonEnable] = useState(false);
+  const [selectedId, selectedType] = useSideMenuState((state) => [
+    state.selectedId,
+    state.selectedType,
+  ]);
 
   const handleUrlChange = (url: string) => {
     setUrl(url);
@@ -64,6 +69,7 @@ export const AddBookmark = () => {
       title: hostname,
       createdAt: new Date().getTime(),
       deletedAt: undefined,
+      category: selectedType === "categories" ? selectedId : undefined,
     });
     setVisible(false);
     setUrl("");

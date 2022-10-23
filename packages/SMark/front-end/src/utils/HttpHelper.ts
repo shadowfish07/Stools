@@ -33,7 +33,10 @@ export default class {
       const response = await fetch(
         encodeURI(`${this.validUrl}/getWebsiteIcon?url=${url}`)
       );
-      if (response.status !== 200 && response.type.startsWith("image")) {
+      if (
+        response.status === 200 &&
+        response.headers.get("content-type")?.startsWith("image")
+      ) {
         const blob = await response.blob();
         return blob;
       }

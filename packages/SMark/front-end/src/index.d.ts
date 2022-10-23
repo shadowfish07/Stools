@@ -9,6 +9,7 @@ declare type Emoji = {
 
 declare type Category = {
   id: string;
+  parentId?: string;
   title: string;
   icon: string;
   deletedAt?: number;
@@ -22,6 +23,7 @@ declare type Bookmark = {
   deletedAt?: number;
   createdAt: number;
   category?: string;
+  parentCategory?: string;
   icon?: string;
   isFavorite?: boolean;
 };

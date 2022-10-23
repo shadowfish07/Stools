@@ -25,7 +25,10 @@ type Props = {
 
 export const Bookmark = ({ bookmark }: Props) => {
   const { selectHelper } = useStorage({ useKey: "categories" });
-  const category = selectHelper.selectCategory(bookmark.category!);
+  const category = selectHelper.selectCategory(
+    bookmark.category!,
+    bookmark.parentCategory
+  );
   const [loadingBookmarks] = useBookmarkLoadState((state) => [
     state.loadingBookmarks,
   ]);
@@ -50,6 +53,12 @@ export const Bookmark = ({ bookmark }: Props) => {
     return dayjs(bookmark.createdAt).format("YYYY-MM-DD");
   };
 
+  const openPage = () => {
+    chrome.tabs.create({
+      url: bookmark.url,
+    });
+  };
+
   return (
     <StyledCard
       hoverable
@@ -58,6 +67,7 @@ export const Bookmark = ({ bookmark }: Props) => {
         cursor: "pointer",
         backdropFilter: "blur(5px)",
       }}
+      onClick={openPage}
     >
       <div style={{ display: "flex" }}>
         {loadingBookmarks.has(bookmark.id) ? (
